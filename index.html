@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quran 1 se 30 tak</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+
+<style>
+body{
+  margin:0;
+  font-family: 'Amiri', serif;
+  background: linear-gradient(to bottom,#012a1f,#044d3a,#012a1f);
+  color:white;
+  text-align:center;
+}
+
+header{
+  padding:25px;
+  background: rgba(0,0,0,0.4);
+  border-bottom:2px solid #d4af37;
+}
+
+.arabic-text{
+  font-size:28px;
+  margin-bottom:10px;
+  color:#ffd700;
+  opacity:0;
+  animation: fadeIn 2s forwards;
+}
+
+h1{
+  color:#ffd700;
+  font-size:32px;
+  margin-bottom:5px;
+  letter-spacing:2px;
+  opacity:0;
+  animation: fadeIn 2s forwards 1s;
+}
+
+p{
+  opacity:0;
+  animation: fadeIn 2s forwards 2s;
+}
+
+@keyframes fadeIn{
+  to{
+    opacity:1;
+  }
+}
+
+/* Letter-by-letter animation */
+.animated-text span{
+  display:inline-block;
+  opacity:0;
+  transform: translateY(-20px);
+  animation: drop 0.5s forwards;
+}
+
+@keyframes drop{
+  to{
+    opacity:1;
+    transform: translateY(0);
+  }
+}
+
+/* Button style */
+.btn{
+  display:inline-block;
+  margin:15px;
+  padding:12px 30px;
+  background:#d4af37;
+  color:black;
+  text-decoration:none;
+  border-radius:25px;
+  font-size:18px;
+  font-weight:bold;
+  box-shadow:0 0 10px gold;
+}
+
+iframe{
+  width:95%;
+  height:600px;
+  border:3px solid #d4af37;
+  border-radius:10px;
+  margin-bottom:20px;
+  background:white;
+}
+
+footer{
+  padding:15px;
+  color:#ffd700;
+  font-size:15px;
+  background: rgba(0,0,0,0.4);
+  border-top:2px solid #d4af37;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="arabic-text animated-text" id="bismillah">   </div>
+  <h1 class="animated-text" id="title">Quran 1 se 30 tak</h1>
+  <p>Complete Quran PDF Viewer</p>
+</header>
+
+<a class="btn" href="quran.pdf" download>
+ Download PDF
+</a>
+
+<iframe src="quran.pdf"></iframe>
+
+<footer>
+<p> Made by Sam </p>
+</footer>
+
+<script>
+// Letter-by-letter animation for header
+function animateText(id){
+  const element = document.getElementById(id);
+  const text = element.textContent;
+  element.textContent = '';
+  for(let i=0;i<text.length;i++){
+    const span = document.createElement('span');
+    span.textContent = text[i];
+    span.style.animationDelay = (i*0.1)+'s';
+    element.appendChild(span);
+  }
+}
+
+animateText('bismillah');
+animateText('title');
+</script>
+
+</body>
+</html>
