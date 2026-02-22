@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Amiri&family=Lateef&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #ffd700;
+  --color-dark-green: #012a1f;
+  --color-light-green: #044d3a;
+  --font-amiri: "Amiri", serif;
+  --font-lateef: "Lateef", serif;
+
+  --animate-glow-pulse: glow-pulse 3s infinite alternate;
+
+  @keyframes glow-pulse {
+    from {
+      box-shadow: 0 0 5px var(--color-gold);
+      transform: scale(1);
+    }
+    to {
+      box-shadow: 0 0 25px var(--color-gold);
+      transform: scale(1.01);
+    }
+  }
+}
