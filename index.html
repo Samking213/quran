@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quran Majeed - Sam</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri&family=Lateef&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --gold: #ffd700;
+  --dark-green: #012a1f;
+  --light-green: #044d3a;
+}
+
+body {
+  margin: 0; padding: 0;
+  font-family: 'Amiri', serif;
+  background: radial-gradient(circle, var(--light-green), var(--dark-green));
+  color: white; text-align: center;
+}
+
+/* Bismillah Styling */
+.bismillah {
+  font-size: clamp(30px, 8vw, 50px);
+  color: var(--gold);
+  margin: 20px 0;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+#welcome-screen { padding: 20px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
+
+/* Highlighted Durood Container */
+.durood-container {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 25px;
+  border-radius: 20px;
+  border: 2px solid var(--gold);
+  margin: 15px auto;
+  width: 90%; max-width: 750px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.durood-text {
+  font-family: 'Lateef', serif;
+  font-size: clamp(22px, 6vw, 32px);
+  line-height: 1.8;
+  direction: rtl;
+  color: #f0f0f0;
+}
+
+/* NAME HIGHLIGHT: Muhammad (PBUH) Name Styling */
+.m-name {
+  color: var(--gold);
+  font-weight: bold;
+  text-shadow: 0 0 12px var(--gold);
+  font-size: 1.1em;
+  padding: 0 5px;
+}
+
+.para-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+  gap: 12px;
+  width: 100%; max-width: 900px;
+  margin: 30px 0;
+}
+
+.para-card {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid var(--gold);
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.para-card:hover { 
+  background: var(--gold); 
+  color: black; 
+  transform: scale(1.08);
+  box-shadow: 0 0 15px var(--gold);
+}
+
+#viewer-screen { display: none; }
+
+header { padding: 15px; background: rgba(0,0,0,0.6); border-bottom: 2px solid var(--gold); }
+
+#pdf-render {
+  border: 3.5px solid var(--gold);
+  margin: 15px auto;
+  max-width: 98%;
+  background: white;
+  display: block;
+}
+
+.btn {
+  background: var(--gold);
+  color: black;
+  padding: 12px 25px;
+  border-radius: 30px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+footer { padding: 25px; color: var(--gold); font-weight: bold; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+
+<div id="welcome-screen">
+  <div class="bismillah">   </div>
+  
+  <div class="durood-container">
+    <div class="durood-text">
+         <span class="m-name"></span>   <span class="m-name"></span>           <br>
+         <span class="m-name"></span>   <span class="m-name"></span>          
+    </div>
+  </div>
+
+  <div class="para-grid" id="para-grid"></div>
+  <footer> MADE BY SAM </footer>
+</div>
+
+<div id="viewer-screen">
+  <header>
+    <button onclick="location.reload()" class="btn" style="float:left; padding: 5px 15px;"> Home</button>
+    <div id="para-title" style="color:var(--gold); font-size:20px;">Para Selection</div>
+  </header>
+
+  <div style="margin: 20px 0;">
+    <button class="btn" id="prev-page"> Prev</button>
+    <span style="margin: 0 15px; font-size: 18px;">Page: <span id="page-num">1</span> / <span id="page-count">...</span></span>
+    <button class="btn" id="next-page">Next </button>
+  </div>
+
+  <canvas id="pdf-render"></canvas>
+  <div style="padding:30px;"><a class="btn" href="quran.pdf" download> Download Full PDF</a></div>
+</div>
+
+<script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+<script>
+// Standard Page Data
+const paraData = [
+  { p: 1, s: 1 }, { p: 2, s: 22 }, { p: 3, s: 42 }, { p: 4, s: 62 }, { p: 5, s: 82 },
+  { p: 6, s: 102 }, { p: 7, s: 122 }, { p: 8, s: 142 }, { p: 9, s: 162 }, { p: 10, s: 182 },
+  { p: 11, s: 202 }, { p: 12, s: 222 }, { p: 13, s: 242 }, { p: 14, s: 262 }, { p: 15, s: 282 },
+  { p: 16, s: 302 }, { p: 17, s: 322 }, { p: 18, s: 342 }, { p: 19, s: 362 }, { p: 20, s: 382 },
+  { p: 21, s: 402 }, { p: 22, s: 422 }, { p: 23, s: 442 }, { p: 24, s: 462 }, { p: 25, s: 482 },
+  { p: 26, s: 502 }, { p: 27, s: 522 }, { p: 28, s: 542 }, { p: 29, s: 562 }, { p: 30, s: 582 }
+];
+
+const url = 'quran.pdf';
+let pdfDoc = null, pageNum = 1, pageIsRendering = false;
+const canvas = document.getElementById('pdf-render'), ctx = canvas.getContext('2d');
+const scale = window.innerWidth < 600 ? 0.85 : 1.3;
+
+const grid = document.getElementById('para-grid');
+paraData.forEach((item, index) => {
+    let nextStart = paraData[index+1] ? paraData[index+1].s - 1 : 'End';
+    let card = document.createElement('div');
+    card.className = 'para-card';
+    card.innerHTML = `<b>Para ${item.p}</b><br><span style="font-size:10px; opacity:0.8;">Pg: ${item.s}-${nextStart}</span>`;
+    card.onclick = () => { pageNum = item.s; startReading(item.p); };
+    grid.appendChild(card);
+});
+
+function startReading(pNum) {
+    document.getElementById('welcome-screen').style.display='none';
+    document.getElementById('viewer-screen').style.display='block';
+    document.getElementById('para-title').innerText = 'Reading Para ' + pNum;
+    loadPDF();
+}
+
+function loadPDF() {
+    pdfjsLib.getDocument(url).promise.then(pdfDoc_ => {
+        pdfDoc = pdfDoc_;
+        document.getElementById('page-count').textContent = pdfDoc.numPages;
+        renderPage(pageNum);
+    }).catch(() => alert("File 'quran.pdf' nahi mili!"));
+}
+
+function renderPage(num) {
+    pageIsRendering = true;
+    pdfDoc.getPage(num).then(page => {
+        const viewport = page.getViewport({ scale });
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        page.render({ canvasContext: ctx, viewport: viewport }).promise.then(() => {
+            pageIsRendering = false;
+        });
+        document.getElementById('page-num').textContent = num;
+        window.scrollTo(0,0);
+    });
+}
+
+document.getElementById('prev-page').onclick = () => { if(pageNum <= 1 || pageIsRendering) return; pageNum--; renderPage(pageNum); };
+document.getElementById('next-page').onclick = () => { if(pageNum >= pdfDoc.numPages || pageIsRendering) return; pageNum++; renderPage(pageNum); };
+</script>
+</body>
+</html>
